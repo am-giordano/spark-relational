@@ -6,6 +6,9 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 
+    val filename = args(0)
+    val mainEntityName = args(1)
+
     val spark = SparkSession
       .builder
       .appName("relatable demo")
@@ -14,12 +17,15 @@ object Main {
 
     val df = spark
       .read
-      .json("data/input/resumes.json")
+      .json(s"data/input/$filename")
 
-    val rs = new RelationalSchema(df)
+    val rs = new RelationalSchema(df, mainEntityName)
 
     rs.dataFrames.foreach(
-      item => item._2.write.option("header", "true").csv(s"data/output/${item._1}")
+      item => item._2
+        .write
+        .option("header", "true")
+        .csv(s"data/output/${filename.replace(".json", "")}/${item._1}")
     )
   }
 }
