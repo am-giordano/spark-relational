@@ -1,4 +1,4 @@
-import com.amgiordano.spark.relatable.RelationalSchema
+import com.amgiordano.spark.relational.RelationalSchema
 
 import org.apache.spark.sql.SparkSession
 
@@ -11,7 +11,7 @@ object Main {
 
     val spark = SparkSession
       .builder
-      .appName("spark-relatable")
+      .appName("spark-relational")
       .config("spark.master", "local")
       .getOrCreate
 

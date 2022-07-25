@@ -1,4 +1,4 @@
-package com.amgiordano.spark.relatable
+package com.amgiordano.spark.relational
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{col, monotonically_increasing_id}
