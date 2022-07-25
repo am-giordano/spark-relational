@@ -15,17 +15,25 @@ object Main {
       .config("spark.master", "local")
       .getOrCreate
 
+    spark.sparkContext.setLogLevel("WARN")
+
     val df = spark
       .read
       .json(s"data/input/$filename")
 
+    df.printSchema
+
     val rs = new RelationalSchema(df, mainEntityName)
 
     rs.dataFrames.foreach(
-      item => item._2
-        .write
-        .option("header", "true")
-        .csv(s"data/output/${filename.replace(".json", "")}/${item._1}")
+      item => {
+        println(item._1)
+        item._2.show
+        item._2
+          .write
+          .option("header", "true")
+          .csv(s"data/output/${filename.replace(".json", "")}/${item._1}")
+      }
     )
   }
 }
