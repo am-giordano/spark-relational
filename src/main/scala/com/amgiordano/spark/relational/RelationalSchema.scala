@@ -28,6 +28,6 @@ class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") {
   }
 
   private def insertIndex(df: DataFrame, entityName: String): DataFrame = {
-    df.select(Array(monotonically_increasing_id().as(s"$entityName!__id__")) ++ df.columns.map(col): _*)
+    df.select(Array(monotonically_increasing_id().as(s"$entityName!!__id__")) ++ df.columns.map(col): _*)
   }
 }
