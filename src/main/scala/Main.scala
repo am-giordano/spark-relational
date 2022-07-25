@@ -14,10 +14,12 @@ object Main {
 
     val df = spark
       .read
-      .json("data/example_input.json")
+      .json("data/input/resumes.json")
 
     val rs = new RelationalSchema(df)
 
-    rs.dataFrames.foreach(_._2.show)
+    rs.dataFrames.foreach(
+      item => item._2.write.option("header", "true").csv(s"data/output/${item._1}")
+    )
   }
 }
