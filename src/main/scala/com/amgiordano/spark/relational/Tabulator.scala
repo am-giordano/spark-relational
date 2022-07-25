@@ -8,7 +8,7 @@ class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String
 
   type TripletArray = Array[(String, DataFrame, Array[String])]
 
-  private val primaryKey: String = s"$entityName!!__id__"
+  private val primaryKey: String = NameComposer.indexName(entityName)
   private val allKeys: Array[String] = Array(primaryKey) ++ foreignKeys
 
   def tabulate(): (DataFrame, TripletArray) = {
@@ -27,7 +27,7 @@ class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String
     for (struct <- df.schema.filter(_.dataType.isInstanceOf[StructType])) {
       val colName = struct.name
       struct.dataType.asInstanceOf[StructType].fields.map(_.name).foreach(
-        fieldName => df = df.withColumn(s"$colName!!$fieldName", col(s"$colName.$fieldName"))
+        fieldName => df = df.withColumn(NameComposer.compose(colName, fieldName), col(s"$colName.$fieldName"))
       )
       df = df.drop(colName)
     }

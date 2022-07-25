@@ -28,11 +28,8 @@ object Main {
     rs.dataFrames.foreach(
       item => {
         println(item._1)
-        item._2.show
-        item._2
-          .write
-          .option("header", "true")
-          .csv(s"data/output/${filename.replace(".json", "")}/${item._1}")
+        val directory = s"data/output/${filename.replace(".json", "")}/${item._1}"
+        item._2.write.option("header", "true").csv(directory)
       }
     )
   }
