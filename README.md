@@ -131,7 +131,7 @@ experience!!technologies
 +--------------------------------+------------------+--------------+------------------------------+---------------------------------+
 ```
 
-Finally, let's write each DataFrame as CSV file:
+Finally, let's write each DataFrame as a CSV file:
 
 ```
 scala> rs.dataFrames.foreach(
