@@ -11,7 +11,7 @@ object Main {
 
     val spark = SparkSession
       .builder
-      .appName("relatable demo")
+      .appName("spark-relatable")
       .config("spark.master", "local")
       .getOrCreate
 
