@@ -16,7 +16,7 @@ object Main {
       .read
       .json("data/example_input.json")
 
-    val rs = new RelationalSchema(df).make
+    val rs = new RelationalSchema(df)
 
     rs.dataFrames.foreach(_._2.show)
   }

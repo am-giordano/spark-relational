@@ -6,16 +6,18 @@ import org.apache.spark.sql.types.{ArrayType, StructType}
 
 class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String]) {
 
-  val primaryKey: String = s"$entityName!__id__"
-  val allKeys: Array[String] = Array(primaryKey) ++ foreignKeys
+  type TripletArray = Array[(String, DataFrame, Array[String])]
 
-  def tabulate: (DataFrame, Array[(String, DataFrame, Array[String])]) = {
+  private val primaryKey: String = s"$entityName!__id__"
+  private val allKeys: Array[String] = Array(primaryKey) ++ foreignKeys
+
+  def tabulate(): (DataFrame, TripletArray) = {
     if (checkNoObjects) {
-      val fromArrayTriplets = getArrayColumns.map(colName => (colName, extractArrayColumn(colName), allKeys))
+      val fromArrayTriplets = arrayColumns.map(colName => (colName, extractArrayColumn(colName), allKeys))
       (df, fromArrayTriplets)
     } else {
       flattenOneLevel()
-      tabulate
+      tabulate()
     }
   }
 
@@ -31,10 +33,9 @@ class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String
     }
   }
 
-  private def getArrayColumns: Array[String] = df.schema.filter(_.dataType.isInstanceOf[ArrayType]).map(_.name).toArray
+  private def arrayColumns: Array[String] = df.schema.filter(_.dataType.isInstanceOf[ArrayType]).map(_.name).toArray
 
   private def extractArrayColumn(colName: String): DataFrame = {
-    // TODO: insertIndex logic should go here
     val dfNew = df.select(allKeys.map(col) ++ Array(explode(col(colName)).as(colName)): _*)
     df = df.drop(colName)
     dfNew

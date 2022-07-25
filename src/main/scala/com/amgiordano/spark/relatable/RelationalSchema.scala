@@ -8,19 +8,23 @@ import scala.collection.mutable.ArrayBuffer
 
 class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") {
 
-  val dataFrames: mutable.LinkedHashMap[String, DataFrame] = mutable.LinkedHashMap()
-  private val toProcess: ArrayBuffer[(String, DataFrame, Array[String])] = ArrayBuffer((mainEntityName, dfMain, Array()))
+  type TableMap = mutable.LinkedHashMap[String, DataFrame]
+  type TripletBuffer = ArrayBuffer[(String, DataFrame, Array[String])]
 
-  def make: RelationalSchema = {
+  val dataFrames: TableMap = mutable.LinkedHashMap()
+  private val toProcess: TripletBuffer = ArrayBuffer((mainEntityName, dfMain, Array()))
+
+  make()
+
+  def make(): Unit = {
     while (toProcess.nonEmpty) {
       var (entityName, df, foreignKeys) = toProcess.remove(0)
       while (dataFrames.keySet.contains(entityName)) entityName += "_"
-      val tab = new Tabulator(entityName, insertIndex(df, entityName), foreignKeys) // TODO: put insertIndex logic inside Tabulator
-      val (dfNew, fromArrayTriplets) = tab.tabulate
+      val tab = new Tabulator(entityName, insertIndex(df, entityName), foreignKeys)
+      val (dfNew, fromArrayTriplets) = tab.tabulate()
       dataFrames.update(entityName, dfNew)
       toProcess ++= fromArrayTriplets
     }
-    this
   }
 
   private def insertIndex(df: DataFrame, entityName: String): DataFrame = {
