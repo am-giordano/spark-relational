@@ -1,5 +1,5 @@
 name := "spark-relational"
-version := "0.1.0"
+version := "0.1.1"
 organization := "com.amgiordano.spark"
 scalaVersion := "2.12.15"
 publishMavenStyle := true
