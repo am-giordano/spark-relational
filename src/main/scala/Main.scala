@@ -25,12 +25,10 @@ object Main {
 
     val rs = new RelationalSchema(df, mainEntityName)
 
-    rs.dataFrames.foreach(
-      item => {
-        println(item._1)
-        val directory = s"data/output/${filename.replace(".json", "")}/${item._1}"
-        item._2.write.option("header", "true").csv(directory)
-      }
-    )
+    for ((tableName, df) <- rs.dataFrames) {
+      println(tableName)
+      val directory = s"data/output/${filename.replace(".json", "")}/$tableName"
+      df.write.option("header", "true").csv(directory)
+    }
   }
 }

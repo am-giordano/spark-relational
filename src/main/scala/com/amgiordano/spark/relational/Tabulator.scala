@@ -26,9 +26,9 @@ class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String
   private def flattenOneLevel(): Unit = {
     for (struct <- df.schema.filter(_.dataType.isInstanceOf[StructType])) {
       val colName = struct.name
-      struct.dataType.asInstanceOf[StructType].fields.map(_.name).foreach(
-        fieldName => df = df.withColumn(NameComposer.compose(colName, fieldName), col(s"$colName.$fieldName"))
-      )
+      for (fieldName <- struct.dataType.asInstanceOf[StructType].fields.map(_.name)) {
+        df = df.withColumn(NameComposer.compose(colName, fieldName), col(s"$colName.$fieldName"))
+      }
       df = df.drop(colName)
     }
   }
