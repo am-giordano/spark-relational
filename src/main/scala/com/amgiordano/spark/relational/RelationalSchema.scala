@@ -6,7 +6,7 @@ import org.apache.spark.sql.functions.{col, monotonically_increasing_id}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") {
+case class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") {
 
   type TableMap = mutable.LinkedHashMap[String, DataFrame]
   type TripletBuffer = ArrayBuffer[(String, DataFrame, Array[String])]
@@ -20,7 +20,7 @@ class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") {
     while (toProcess.nonEmpty) {
       var (entityName, df, foreignKeys) = toProcess.remove(0)
       while (dataFrames.keySet.contains(entityName)) entityName += "_"
-      val tab = new Tabulator(entityName, insertIndex(df, entityName), foreignKeys)
+      val tab = Tabulator(entityName, insertIndex(df, entityName), foreignKeys)
       val (dfNew, fromArrayTriplets) = tab.tabulate()
       dataFrames.update(entityName, dfNew)
       toProcess ++= fromArrayTriplets
