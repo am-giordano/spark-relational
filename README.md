@@ -13,7 +13,7 @@ DataFrames with flat columns interrelated by foreign keys.
 ### spark-shell, pyspark, or spark-submit
 
 ```
-> $SPARK_HOME/bin/spark-shell --packages am-giordano:spark-relational:0.2.0
+> $SPARK_HOME/bin/spark-shell --packages am-giordano:spark-relational:0.2.1
 ```
 
 ### sbt
@@ -21,7 +21,7 @@ DataFrames with flat columns interrelated by foreign keys.
 ```
 resolvers += "Spark Packages Repo" at "https://repos.spark-packages.org/"
 
-libraryDependencies += "am-giordano" % "spark-relational" % "0.2.0"
+libraryDependencies += "am-giordano" % "spark-relational" % "0.2.1"
 ```
 
 ### Maven
@@ -32,7 +32,7 @@ libraryDependencies += "am-giordano" % "spark-relational" % "0.2.0"
   <dependency>
     <groupId>am-giordano</groupId>
     <artifactId>spark-relational</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
   </dependency>
 </dependencies>
 <repositories>
