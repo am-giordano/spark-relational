@@ -13,6 +13,12 @@ sbt publishLocal
 cp "$target_prefix".jar "$jar"
 cp "$target_prefix".pom "$pom"
 
+echo "JAR STRUCTURE"
+jar tf "$jar"
+
+echo "POM CONTENTS"
+cat "$pom"
+
 sed -ibackup "s/$group_id/$username/" "$pom"
 sed -ibackup "s/${artifact_id}_$scala_version/$artifact_id/" "$pom"
 
