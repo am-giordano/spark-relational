@@ -19,8 +19,8 @@ jar tf "$jar"
 echo "POM CONTENTS"
 cat "$pom"
 
-sed -ibackup "s/$group_id/$username/" "$pom"
-sed -ibackup "s/${artifact_id}_$scala_version/$artifact_id/" "$pom"
+sed -ibackup "s/<groupId>$group_id<\/groupId>/<groupId>$username<\/groupId>/" "$pom"
+sed -ibackup "s/<artifactId>${artifact_id}_$scala_version<\/artifactId>/<artifactId>$artifact_id<\/artifactId>/" "$pom"
 
 zip "releases/$artifact_id-$version.zip" "$jar" "$pom"
 
