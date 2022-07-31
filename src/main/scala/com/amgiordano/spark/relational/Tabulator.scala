@@ -4,7 +4,7 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{col, explode}
 import org.apache.spark.sql.types.{ArrayType, StructType}
 
-class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String]) {
+case class Tabulator(entityName: String, var df: DataFrame, foreignKeys: Array[String]) {
 
   type TripletArray = Array[(String, DataFrame, Array[String])]
 
