@@ -53,7 +53,7 @@ scala> import com.amgiordano.spark.relational.RelationalSchema
 scala> import org.apache.spark.sql.SparkSession
 scala> val spark = SparkSession.builder.getOrCreate
 scala> val df = spark.read.json("data/input/resumes.json")
-scala> val rs = new RelationalSchema(df, "person")
+scala> val rs = RelationalSchema(df, "person")
 scala> rs.dataFrames.foreach(item => item._2.write.option("header", "true").csv(s"data/output/resumes/${item._1}"))
 ```
 
