@@ -13,7 +13,29 @@ DataFrames with flat columns interrelated by foreign keys.
 sbt:
 
 ```
-libraryDependencies += "com.amgiordano.spark" % "spark-relational" % "0.1.0"
+resolvers += "Spark Packages Repo" at "https://repos.spark-packages.org/"
+
+libraryDependencies += "am-giordano" % "spark-relational" % "0.2.0"
+```
+
+Maven:
+
+```
+<dependencies>
+  <!-- list of dependencies -->
+  <dependency>
+    <groupId>am-giordano</groupId>
+    <artifactId>spark-relational</artifactId>
+    <version>0.2.0</version>
+  </dependency>
+</dependencies>
+<repositories>
+  <!-- list of other repositories -->
+  <repository>
+    <id>SparkPackagesRepo</id>
+    <url>https://repos.spark-packages.org/</url>
+  </repository>
+</repositories>
 ```
 
 ## Example of use: Read-Convert-Write
@@ -30,7 +52,7 @@ scala> rs.dataFrames.foreach(item => item._2.write.option("header", "true").csv(
 ```
 
 This example shows how to load a JSON file into a DataFrame, convert it into an interrelated set of flat DataFrames, 
-and write these in CSV files. The dataset used can be found in the GitHub repository of this package in 
+and write these to CSV files. The dataset used can be found in the GitHub repository of this package in 
 `data/input/resumes.json`.
 
 Each document in this dataset has a complex structure with nested objects and arrays.
@@ -70,18 +92,16 @@ the DataFrame and a name for the main entity of the dataset, "person":
 
 ```
 scala> import com.amgiordano.spark.relational.RelationalSchema      
-scala> val rs = new RelationalSchema(df, "person")
+scala> val rs = RelationalSchema(df, "person")
 ```
 
 Now we can look at each of the tables:
 
 ```
-scala> rs.dataFrames.foreach(
-     |   item => {
-     |     println(item._1)  // First element of the item is the table name
-     |     item._2.show      // Second element of the item if the DataFrame
-     |   }
-     | )
+scala> for ((tableName, df) <- rs.dataFrames) {
+     |   println(tableName)
+     |   df.show
+     | }
 ```
 
 Output:
@@ -131,13 +151,10 @@ experience!!technologies
 +--------------------------------+------------------+--------------+------------------------------+---------------------------------+
 ```
 
-Finally, let's write each DataFrame as a CSV file:
+Finally, let's write each DataFrame to a CSV file:
 
 ```
-scala> rs.dataFrames.foreach(
-     |   item => item._2
-     |     .write
-     |     .option("header", "true")
-     |     .csv(s"data/output/resumes/${item._1}")
-     | )
+scala> for ((tableName, df) <- rs.dataFrames) {
+     |   df.write.option("header", "true").csv(s"data/output/resumes/$tableName")
+     | }
 ```
