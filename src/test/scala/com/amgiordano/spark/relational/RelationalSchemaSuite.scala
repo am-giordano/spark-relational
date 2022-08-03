@@ -25,19 +25,19 @@ class RelationalSchemaSuite extends AnyFunSuite {
   def values(df: DataFrame, colName: String): Array[Any] = df.select(colName).collect.map(_(0))
 
   test("Flat document") {
-    assertSameRS(Seq("{'a': 0}"), Map("main" -> Seq("{'main!!__id__': 0, 'a': 0}")))
+    assertSameRS(Seq("{'a': 0}"), Map("root" -> Seq("{'root!!__id__': 0, 'a': 0}")))
   }
 
   test("With object") {
-    assertSameRS(Seq("{'a': {'b': 0}}"), Map("main" -> Seq("{'main!!__id__': 0, 'a!!b': 0}")))
+    assertSameRS(Seq("{'a': {'b': 0}}"), Map("root" -> Seq("{'root!!__id__': 0, 'a!!b': 0}")))
   }
 
   test("With array") {
     assertSameRS(
       Seq("{'a': [0]}"),
       Map(
-        "main" -> Seq("{'main!!__id__': 0}"),
-        "a" -> Seq("{'a!!__id__': 0, 'main!!__id__': 0, 'a': 0}")
+        "root" -> Seq("{'root!!__id__': 0}"),
+        "a" -> Seq("{'a!!__id__': 0, 'root!!__id__': 0, 'a': 0}")
       )
     )
   }
@@ -46,8 +46,8 @@ class RelationalSchemaSuite extends AnyFunSuite {
     assertSameRS(
       Seq("{'a': [{'b': 0}]}"),
       Map(
-        "main" -> Seq("{'main!!__id__': 0}"),
-        "a" -> Seq("{'a!!__id__': 0, 'main!!__id__': 0, 'a!!b': 0}")
+        "root" -> Seq("{'root!!__id__': 0}"),
+        "a" -> Seq("{'a!!__id__': 0, 'root!!__id__': 0, 'a!!b': 0}")
       )
     )
   }

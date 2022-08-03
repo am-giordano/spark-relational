@@ -6,22 +6,21 @@ import org.apache.spark.sql.functions.{col, monotonically_increasing_id}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-case class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") {
+class RelationalSchema(df: DataFrame, rootName: String = "main") {
 
   type TableMap = mutable.LinkedHashMap[String, DataFrame]
-  type TripletBuffer = ArrayBuffer[(String, DataFrame, Array[String])]
+  private type TripletBuffer = ArrayBuffer[(String, DataFrame, Array[String])]
 
   val dataFrames: TableMap = mutable.LinkedHashMap()
-  private val toProcess: TripletBuffer = ArrayBuffer((mainEntityName, dfMain, Array()))
+  private val toProcess: TripletBuffer = ArrayBuffer((rootName, df, Array()))
 
   make()
 
-  def make(): Unit = {
+  private def make(): Unit = {
     while (toProcess.nonEmpty) {
       var (entityName, df, foreignKeys) = toProcess.remove(0)
       while (dataFrames.keySet.contains(entityName)) entityName += "_"
-      val tab = Tabulator(entityName, insertIndex(df, entityName), foreignKeys)
-      val (dfNew, fromArrayTriplets) = tab.tabulate()
+      val (dfNew, fromArrayTriplets) = Tabulator.tabulate(entityName, insertIndex(df, entityName), foreignKeys)
       dataFrames.update(entityName, dfNew)
       toProcess ++= fromArrayTriplets
     }
@@ -30,4 +29,8 @@ case class RelationalSchema(dfMain: DataFrame, mainEntityName: String = "main") 
   private def insertIndex(df: DataFrame, entityName: String): DataFrame = {
     df.select(Array(monotonically_increasing_id().as(NameComposer.indexName(entityName))) ++ df.columns.map(col): _*)
   }
+}
+
+object RelationalSchema {
+  def apply(df: DataFrame, rootName: String = "root"): RelationalSchema = new RelationalSchema(df, rootName)
 }
