@@ -13,7 +13,7 @@ DataFrames with flat columns interrelated by foreign keys.
 ### spark-shell, pyspark, or spark-submit
 
 ```
-> $SPARK_HOME/bin/spark-shell --packages am-giordano:spark-relational:0.2.1
+> $SPARK_HOME/bin/spark-shell --packages am-giordano:spark-relational:0.3.0
 ```
 
 ### sbt
@@ -21,7 +21,7 @@ DataFrames with flat columns interrelated by foreign keys.
 ```
 resolvers += "Spark Packages Repo" at "https://repos.spark-packages.org/"
 
-libraryDependencies += "am-giordano" % "spark-relational" % "0.2.1"
+libraryDependencies += "am-giordano" % "spark-relational" % "0.3.0"
 ```
 
 ### Maven
@@ -32,7 +32,7 @@ libraryDependencies += "am-giordano" % "spark-relational" % "0.2.1"
   <dependency>
     <groupId>am-giordano</groupId>
     <artifactId>spark-relational</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0</version>
   </dependency>
 </dependencies>
 <repositories>
@@ -49,12 +49,12 @@ libraryDependencies += "am-giordano" % "spark-relational" % "0.2.1"
 ```
 TL;DR
 
-scala> import com.amgiordano.spark.relational.RelationalSchema      
+scala> import com.amgiordano.spark.relational.Converter.makeRelationalSchema      
 scala> import org.apache.spark.sql.SparkSession
 scala> val spark = SparkSession.builder.getOrCreate
 scala> val df = spark.read.json("data/input/resumes.json")
-scala> val rs = RelationalSchema(df, "person")
-scala> rs.dataFrames.foreach(item => item._2.write.option("header", "true").csv(s"data/output/resumes/${item._1}"))
+scala> val rs = makeRelationalSchema(df, "person")
+scala> rs.foreach(item => item._2.write.option("header", "true").csv(s"data/output/resumes/${item._1}"))
 ```
 
 This example shows how to load a JSON file into a DataFrame, convert it into an interrelated set of flat DataFrames, 
@@ -93,18 +93,18 @@ root
  |-- name: string (nullable = true)
 ```
 
-To generate a relational schema for this dataset, let's make an instance of RelationalSchema passing as arguments 
+To generate a relational schema for this dataset, let's call the makeRelationalSchema function passing as arguments 
 the DataFrame and a name for the main entity of the dataset, "person":
 
 ```
-scala> import com.amgiordano.spark.relational.RelationalSchema      
-scala> val rs = RelationalSchema(df, "person")
+scala> import com.amgiordano.spark.relational.Converter.makeRelationalSchema      
+scala> val rs = makeRelationalSchema(df, "person")
 ```
 
 Now we can look at each of the tables:
 
 ```
-scala> for ((tableName, df) <- rs.dataFrames) {
+scala> for ((tableName, df) <- rs) {
      |   println(tableName)
      |   df.show
      | }
@@ -160,7 +160,7 @@ experience!!technologies
 Finally, let's write each DataFrame to a CSV file:
 
 ```
-scala> for ((tableName, df) <- rs.dataFrames) {
+scala> for ((tableName, df) <- rs) {
      |   df.write.option("header", "true").csv(s"data/output/resumes/$tableName")
      | }
 ```
