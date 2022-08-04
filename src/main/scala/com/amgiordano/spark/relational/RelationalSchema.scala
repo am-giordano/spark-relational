@@ -6,31 +6,28 @@ import org.apache.spark.sql.functions.{col, monotonically_increasing_id}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-class RelationalSchema(df: DataFrame, rootName: String = "main") {
+object RelationalSchema {
 
-  type TableMap = mutable.LinkedHashMap[String, DataFrame]
-  private type TripletBuffer = ArrayBuffer[(String, DataFrame, Array[String])]
+  type RelationalSchema = mutable.LinkedHashMap[String, DataFrame]
 
-  val dataFrames: TableMap = mutable.LinkedHashMap()
-  private val toProcess: TripletBuffer = ArrayBuffer((rootName, df, Array()))
+  def make(df: DataFrame, rootName: String = "root"): RelationalSchema = {
 
-  make()
+    val schema = mutable.LinkedHashMap[String, DataFrame]()
+    val toProcess = ArrayBuffer[Tabulator.EntityTriplet]((rootName, df, Array()))
 
-  private def make(): Unit = {
     while (toProcess.nonEmpty) {
-      var (entityName, df, foreignKeys) = toProcess.remove(0)
-      while (dataFrames.keySet.contains(entityName)) entityName += "_"
-      val (dfNew, fromArrayTriplets) = Tabulator.tabulate(entityName, insertIndex(df, entityName), foreignKeys)
-      dataFrames.update(entityName, dfNew)
+      val triplet = toProcess.remove(0)
+      var entityName = triplet._1
+      while (schema.keySet.contains(entityName)) entityName += "_"
+      val (df, fromArrayTriplets) = Tabulator.tabulate(entityName, insertIndex(triplet._2, entityName), triplet._3)
+      schema.update(entityName, df)
       toProcess ++= fromArrayTriplets
     }
+
+    schema
   }
 
-  private def insertIndex(df: DataFrame, entityName: String): DataFrame = {
+  def insertIndex(df: DataFrame, entityName: String): DataFrame = {
     df.select(Array(monotonically_increasing_id().as(NameComposer.indexName(entityName))) ++ df.columns.map(col): _*)
   }
-}
-
-object RelationalSchema {
-  def apply(df: DataFrame, rootName: String = "root"): RelationalSchema = new RelationalSchema(df, rootName)
 }

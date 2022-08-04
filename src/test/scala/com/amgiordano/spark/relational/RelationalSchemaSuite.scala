@@ -12,8 +12,8 @@ class RelationalSchemaSuite extends AnyFunSuite {
 
   def assertSameRS(inputStrings: Seq[String], expectedSchema: Map[String, Seq[String]]): Assertion = {
     val dfInput = spark.read.json(inputStrings.toDS)
-    val rs = RelationalSchema(dfInput)
-    assert(rs.dataFrames.forall(item => assertSameDataFrames(item._2, spark.read.json(expectedSchema(item._1).toDS))))
+    val rs = RelationalSchema.make(dfInput)
+    assert(rs.forall(item => assertSameDataFrames(item._2, spark.read.json(expectedSchema(item._1).toDS))))
   }
 
   def assertSameDataFrames(dfActual: DataFrame, dfExpected: DataFrame): Boolean = {
