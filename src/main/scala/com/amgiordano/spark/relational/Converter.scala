@@ -6,11 +6,11 @@ import org.apache.spark.sql.functions.{col, monotonically_increasing_id}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object RelationalSchema {
+object Converter {
 
   type RelationalSchema = mutable.LinkedHashMap[String, DataFrame]
 
-  def make(df: DataFrame, rootName: String = "root"): RelationalSchema = {
+  def makeRelationalSchema(df: DataFrame, rootName: String = "root"): RelationalSchema = {
 
     val schema = mutable.LinkedHashMap[String, DataFrame]()
     val toProcess = ArrayBuffer[Tabulator.EntityTriplet]((rootName, df, Array()))

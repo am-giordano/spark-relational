@@ -1,10 +1,12 @@
 package com.amgiordano.spark.relational
 
+import com.amgiordano.spark.relational.Converter.makeRelationalSchema
+
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.scalatest.Assertion
 import org.scalatest.funsuite.AnyFunSuite
 
-class RelationalSchemaSuite extends AnyFunSuite {
+class ConverterSuite extends AnyFunSuite {
 
   val spark: SparkSession = SparkSession.builder.master("local[1]").getOrCreate
   spark.sparkContext.setLogLevel("WARN")
@@ -12,7 +14,7 @@ class RelationalSchemaSuite extends AnyFunSuite {
 
   def assertSameRS(inputStrings: Seq[String], expectedSchema: Map[String, Seq[String]]): Assertion = {
     val dfInput = spark.read.json(inputStrings.toDS)
-    val rs = RelationalSchema.make(dfInput)
+    val rs = makeRelationalSchema(dfInput)
     assert(rs.forall(item => assertSameDataFrames(item._2, spark.read.json(expectedSchema(item._1).toDS))))
   }
 
