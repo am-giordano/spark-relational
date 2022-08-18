@@ -50,6 +50,6 @@ object Converter {
    * @return DataFrame with the identifier column.
    */
   def insertIndex(df: DataFrame, entityName: String): DataFrame = {
-    df.select(Array(monotonically_increasing_id().as(NameComposer.identifierName(entityName))) ++ df.columns.map(col): _*)
+    df.select(monotonically_increasing_id().as(NameComposer.identifierName(entityName)) +: df.columns.map(col): _*)
   }
 }

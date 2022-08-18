@@ -29,7 +29,7 @@ object Tabulator {
   def tabulate(entityName: String, df: DataFrame, foreignKeys: Array[String]): (DataFrame, Array[EntityTriplet]) = {
 
     val primaryKey = NameComposer.identifierName(entityName)
-    val allKeys = Array(primaryKey) ++ foreignKeys
+    val allKeys = primaryKey +: foreignKeys
 
     @tailrec
     def go(df: DataFrame): (DataFrame, Array[EntityTriplet]) = {
@@ -104,6 +104,6 @@ object Tabulator {
    * @return DataFrame with the column exploded.
    */
   def explodeArrayColumn(df: DataFrame, colName: String, allKeys: Array[String]): DataFrame = {
-    df.select(allKeys.map(col) ++ Array(explode(col(colName)).as(colName)): _*)
+    df.select(allKeys.map(col) :+ explode(col(colName)).as(colName): _*)
   }
 }
