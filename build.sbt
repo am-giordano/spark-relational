@@ -1,5 +1,5 @@
 name := "spark-relational"
-version := "0.3.0"
+version := "0.3.1"
 organization := "com.amgiordano"
 description := "Document-oriented to relational data conversion in Spark"
 scalaVersion := "2.12.15"
